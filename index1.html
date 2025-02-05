@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Sentiment Analyzer</title>
+</head>
+<body>
+    <h2>Enter a sentence:</h2>
+    <input type="text" id="userInput">
+    <button onclick="analyzeText()">Analyze</button>
+    <p id="result"></p>
+
+    <script>
+        async function analyzeText() {
+    const text = document.getElementById("userInput").value;
+
+    try {
+        const response = await fetch("http://localhost:8000/analyze/", {
+            method: "POST", 
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ text: text })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json(); 
+            throw new Error(`HTTP error! status: ${response.status}, detail: ${JSON.stringify(errorData)}`);
+        }
+
+        const data = await response.json();
+        document.getElementById("result").innerText = `Result: ${data.label}, Trust: ${data.score.toFixed(2)}`;
+    } catch (error) {
+        console.error("Error:", error); 
+        document.getElementById("result").innerText = "An error has occurred. Check console.";
+    }
+}
+
+    </script>
+</body>
+</html>
